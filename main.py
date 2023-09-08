@@ -1,7 +1,7 @@
 import uvicorn
-from datetime import datetime
+from datetime import datetime, timezone
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import RedirectResponse
 
 app = FastAPI()
@@ -13,14 +13,15 @@ def main():
 
 @app.get('/api/')
 def root(slack_name, track):
-    current_date = datetime.now()
+    current_date = datetime.now(timezone.utc)
+    iso8601_formatted = current_date.replace(microsecond=0).strftime("%Y-%m-%dT%H:%M:%SZ")
     day_of_week = current_date.weekday()
     day_name = current_date.strftime("%A")
 
     return {
         "slack_name": slack_name,
         "current_day": day_name,
-        "utc_time": current_date.isoformat(),
+        "utc_time": iso8601_formatted,
         "track": track,
         "github_file_url": "https://github.com/vicradon/hngx-task1/blob/main/main.py",
         "github_repo_url": "https://github.com/vicradon/hngx-task1",
